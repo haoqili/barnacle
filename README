@@ -1,3 +1,9 @@
+HaoQi's Barnacle Fork
+==================
+Goal: modify Barnacle to put the phone wifi into adhoc mode without
+the NAT or DHCP binaries running, and simplify the interface.
+
+
 Barnacle Wifi Tether
 ====================
 

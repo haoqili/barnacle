@@ -160,6 +160,7 @@
     <string name="fixUrl">http://szym.net/barnacle/fix/</string>
     <string name="rootUrl">http://szym.net/barnacle/faq/#root</string>
     <string name="wikiUrl">http://github.com/szym/barnacle/wiki</string>
-    <string name="paypalUrl">https://www.paypal.com/cgi-bin/webscr?cmd=_donations&amp;business=U3GSAVQDS3UK6&amp;lc=US&amp;item_name=szym%2enet&amp;currency_code=USD&amp;bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted</string>
+    <string name="paypalUrl">https://www.paypal.com/</string>
+    <!--<string name="paypalUrl">https://www.paypal.com/cgi-bin/webscr?cmd=_donations&amp;business=U3GSAVQDS3UK6&amp;lc=US&amp;item_name=szym%2enet&amp;currency_code=USD&amp;bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted</string>-->
 
 </resources>
