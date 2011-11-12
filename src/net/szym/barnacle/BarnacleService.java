@@ -65,7 +65,7 @@ public class BarnacleService extends android.app.Service {
     // private state
     private int state = STATE_STOPPED;
     private Process process = null; // the barnacle process
-    private LocalSocket nat_ctrl = null;
+    //private LocalSocket nat_ctrl = null;
     // output monitoring threads
     private Thread[] threads = new Thread[2];
     private PowerManager.WakeLock wakeLock;
@@ -214,13 +214,13 @@ public class BarnacleService extends android.app.Service {
             if (msg.obj != null) {
                 String line = (String)msg.obj;
                 log(true, line); // just dump it and ignore it
-                if (line.startsWith("dnsmasq: DHCPACK")) {
+                /*if (line.startsWith("dnsmasq: DHCPACK")) {
                     String[] vals = line.split(" +");
                     if (vals.length > 3) {
                         ClientData cd = new ClientData(vals[3], vals[2], vals.length > 4 ? vals[4] : null);
                         clientAdded(cd);
                     }
-                }
+                }*/
             } else {
                 // no message, means process died
                 log(true, getString(R.string.unexpected));
@@ -249,24 +249,24 @@ public class BarnacleService extends android.app.Service {
                 // ignore it, wait for MSG_ERROR(null)
                 break;
             }
-            if (line.startsWith("DHCP: ACK")) {
+            /*if (line.startsWith("DHCP: ACK")) {
                 // DHCP: ACK <MAC> <IP> [<HOSTNAME>]
                 String[] vals = line.split(" +");
                 ClientData cd = new ClientData(vals[2], vals[3], vals.length > 4 ? vals[4] : null);
                 clientAdded(cd);
-            } else if (line.startsWith("WIFI: OK")) {
+            } else*/
+             if (line.startsWith("WIFI: OK")) {
                 // WIFI: OK <IFNAME> <MAC>
                 String[] parts = line.split(" +");
                 if_lan = parts[2];
                 if_mac = Util.MACAddress.parse(parts[3]);
                 if (state == STATE_STARTING) {
-                    connectToNat();
+                    //connectToNat();
 
                     state = STATE_RUNNING;
                     log(false, getString(R.string.running));
                     clients.clear();
                     stats.init(Util.fetchTrafficData(if_lan));
-                    //app.foundIfLan(if_lan); // this will allow 3G <-> 4G with simple restart
                     app.processStarted();
                     mHandler.sendEmptyMessage(MSG_ASSOC);
                 }
@@ -350,9 +350,9 @@ public class BarnacleService extends android.app.Service {
             break;
         case MSG_FILTER:
             if (state != STATE_RUNNING) return;
-            if (tellNat((String)msg.obj)) {
+            /*if (tellNat((String)msg.obj)) {
                 app.updateToast(getString(R.string.filterupdated), false);
-            }
+            }*/
             break;
         case MSG_STATS:
             mHandler.removeMessages(MSG_STATS);
@@ -413,8 +413,8 @@ public class BarnacleService extends android.app.Service {
         }
         clients.add(cd);
 
-        if (nat_ctrl == null)
-            connectToNat(); // re-attempt to connect
+        //if (nat_ctrl == null)
+        //    connectToNat(); // re-attempt to connect
 
         log(false, String.format(getString(R.string.connected), cd.toNiceString()));
         app.clientAdded(cd);
@@ -449,7 +449,7 @@ public class BarnacleService extends android.app.Service {
         return true;
     }
 
-    private void connectToNat() {
+    /*private void connectToNat() {
         nat_ctrl = new LocalSocket();
         for (int i = 0; i < 3; ++i) {
             try {
@@ -481,7 +481,7 @@ public class BarnacleService extends android.app.Service {
         } catch (IOException e) {}
         nat_ctrl = null;
     }
-
+    */
     private boolean tellProcess(String msg) {
         if (process != null) {
             try {
@@ -492,6 +492,7 @@ public class BarnacleService extends android.app.Service {
         return false;
     }
 
+    /*
     private boolean tellNat(String msg) {
         if (nat_ctrl != null) {
             Log.d(TAG, "tellNat " + msg);
@@ -508,6 +509,7 @@ public class BarnacleService extends android.app.Service {
         }
         return false;
     }
+    */
 
     private void stopProcess() {
         if (process != null) {
@@ -536,7 +538,7 @@ public class BarnacleService extends android.app.Service {
             process = null;
             threads[0].interrupt();
             threads[1].interrupt();
-            nat_ctrl = null;
+            //nat_ctrl = null;
         }
     }
 

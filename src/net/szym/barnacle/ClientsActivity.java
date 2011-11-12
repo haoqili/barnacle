@@ -105,7 +105,7 @@ public class ClientsActivity extends android.app.ListActivity {
             @Override
             public boolean onItemLongClick(AdapterView<?> arg0, View v,
                     int position, long id) {
-                app.dmzRequest(clients.get(position).ip);
+                //app.dmzRequest(clients.get(position).ip);
                 return true;
             }
         });

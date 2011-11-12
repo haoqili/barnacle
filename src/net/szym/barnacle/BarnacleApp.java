@@ -45,7 +45,7 @@ import android.widget.Toast;
 * Manages preferences, activities and prepares the service
 */
 public class BarnacleApp extends android.app.Application {
-    final static String TAG = "BarnacleApp";
+    final static String TAG = "myBarnacleApp";
 
     final static String FILE_SCRIPT = "setup";
     final static String FILE_INI    = "brncl.ini";
@@ -330,16 +330,13 @@ public class BarnacleApp extends android.app.Application {
 
         if (!installIfNeeded(newVersion, R.raw.setup, FILE_SCRIPT)) return false;
         if (!installIfNeeded(newVersion, R.raw.run,   "run")) 	  return false;
-        if (!installIfNeeded(newVersion, R.raw.dhcp,  "dhcp")) 	  return false;
-        if (!installIfNeeded(newVersion, R.raw.nat,   "nat")) 	  return false;
+        //if (!installIfNeeded(newVersion, R.raw.dhcp,  "dhcp")) 	  return false;
+        //if (!installIfNeeded(newVersion, R.raw.nat,   "nat")) 	  return false;
         if (!installIfNeeded(newVersion, R.raw.wifi,  "wifi"))    return false;
 
-//        if (!installIfNeeded(newVersion, R.raw.dhcp_dnsmasq, "dhcp_dnsmasq")) return false;
-//        if (!installIfNeeded(newVersion, R.raw.dnsmasq, "dnsmasq")) return false;
 
         // unpack all scripts
         String [] scripts = getResources().getStringArray(R.array.script_values);
-        //int [] ids = getResources().getIntArray(R.array.script_ids); // doesn't work -- buggo in AOSP
         android.content.res.TypedArray ar = getResources().obtainTypedArray(R.array.script_ids);
         for (int i = 1; i < scripts.length; ++i) { // NOTE: the first one is none
             //int id = ids[i];
@@ -355,9 +352,9 @@ public class BarnacleApp extends android.app.Application {
         return true;
     }
 
-    protected String natCtrlPath() {
+    /*protected String natCtrlPath() {
         return getFileStreamPath("nat_ctrl").getPath();
-    }
+    }*/
 
     /** Prepare .ini file from preferences */
     protected boolean prepareIni() {
@@ -387,20 +384,13 @@ public class BarnacleApp extends android.app.Application {
                 sb.append("brncl_").append(k).append("=1\n");
         }
 
+        /*
         sb.append("brncl_nat_ctrl=").append(natCtrlPath()).append('\n');
         String preservedPorts = prefs.getString(getString(R.string.nat_preserve), "");
         sb.append("brncl_nat_preserve=").append(Util.toCommaList(preservedPorts)).append('\n');
+        */
         sb.append("brncl_path=").append(getFilesDir()).append('\n');
 
-        /*
-        if (sb.length() == 0) {
-            // wow, no preferences?
-            updateToast(getString(R.string.noprefs), false);
-            PreferenceManager.setDefaultValues(this, R.xml.preferences, true);
-            statusActivity.startActivity(new Intent(this, SettingsActivity.class));
-            return false;
-        }
-        */
         try {
             java.io.OutputStream os = openFileOutput(FILE_INI, MODE_PRIVATE);
             os.write(sb.toString().getBytes());
@@ -446,7 +436,7 @@ public class BarnacleApp extends android.app.Application {
         prefs.edit().putString(getString(R.string.if_lan), if_lan).commit();
     }
 
-    public void dmzRequest(final String ip) {
+    /*public void dmzRequest(final String ip) {
         if (service != null) {
             String preservedPorts = prefs.getString(getString(R.string.nat_preserve), "");
             if (preservedPorts.length() > 0) {
@@ -475,6 +465,7 @@ public class BarnacleApp extends android.app.Application {
             }
         }
     }
+    */
 
     void cleanUpNotifications() {
         if ((service != null) && (service.getState() == BarnacleService.STATE_STOPPED))
