@@ -1,4 +1,16 @@
 /*
+TODO:TOASK:
+
+Step 1. The wifiState can get to == WifiManager.WIFI_STATE_DISBALED
+
+Step 2. It's failing at checkUplink(), which checks if ConnectivityManager.TYPE_MOBILE or ConnetivityManager.TYPE_WIMAX is connected.
+
+- Which type do we want?
+- How to get that type running?
+
+*/
+
+/*
 *  This file is part of Barnacle Wifi Tether
 *  Copyright (C) 2010 by Szymon Jakubczak
 *
@@ -288,11 +300,18 @@ public class BarnacleService extends android.app.Service {
             state = STATE_STARTING;
             // FALL THROUGH!
         case MSG_NETSCHANGE:
+            log(false, "hq. MSG_NETSCHANGE. about to get getWifiState");
             int wifiState = wifiManager.getWifiState();
+            log(false, "hq. " + TAG + String.format("NETSCHANGE: %d %d %s", wifiState, state, process == null ? "null" : "proc"));
             Log.e(TAG, String.format("NETSCHANGE: %d %d %s", wifiState, state, process == null ? "null" : "proc"));
+            log(false, "hq. " + String.format("wifiState %d =? WifiManager.WIFI_STATE_DISABLED = %d", wifiState, WifiManager.WIFI_STATE_DISABLED));
             if (wifiState == WifiManager.WIFI_STATE_DISABLED) {
+                log(false, "hq. INSIDE :) wifi state disabled");
+                log(false, String.format(
+                    "( (state = %d) ?== (STATE_STARTING = %d) ) && ( (process = %s) ?== null ... && checkUplink:", state, STATE_STARTING, process == null ? "proc_is_null" : "proc_is_not_null"));
                 // wifi is good (or lost), we can start now...
                 if ((state == STATE_STARTING) && (process == null) && checkUplink()) {
+                    log(false, "hq. in state == STATE STARTING and no proccess and checkuplink :D:D:D");
                     log(false, getString(R.string.dataready));
                     if (!app.findIfWan()) {
                         log(true, getString(R.string.wanerr));
@@ -305,13 +324,18 @@ public class BarnacleService extends android.app.Service {
                         break;
                     }
                     log(false, getString(R.string.iniok));
+                    log(false, "hq. :):):):):) :D:D:D:D:D:D about to startProcess()");
                     if (!startProcess()) {
                         log(true, getString(R.string.starterr));
                         state = STATE_STOPPED;
                         break;
                     }
                 } // if not checkUpLink then we simply wait...
+                else {
+                    log(true, "either state != STATE_STARTING, process != null, or !checkUplink()");
+                }
             } else {
+                log(false, "hq. Wifi state Enabled! :( the else before STATE_STARTING");
                 if (state == STATE_RUNNING) {
                     // this is super bad, will have to restart!
                     app.updateToast(getString(R.string.conflictwifi), true);
@@ -322,6 +346,7 @@ public class BarnacleService extends android.app.Service {
                     // we should wait until wifi is disabled...
                     state = STATE_STARTING;
                 } else if (state == STATE_STARTING) {
+                    log(false, "hq if state == STATE_STARTING, turn off wifi");
                     if ((wifiState == WifiManager.WIFI_STATE_ENABLED) ||
                         (wifiState == WifiManager.WIFI_STATE_ENABLING)) {
                         app.updateToast(getString(R.string.disablewifi), false);
@@ -422,26 +447,45 @@ public class BarnacleService extends android.app.Service {
     }
 
     private boolean checkUplink() {
+        log(false, "hq. in checkUplink()");
         if (app.prefs.getBoolean("wan_nowait", false)) {
             return true;
         }
+        // 0 = ConnectivityManager.TYPE_MOBILE
         NetworkInfo mobileInfo = connManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
+        // 6 = ConnectivityManager.TYPE_WIMAX
         NetworkInfo wimaxInfo = connManager.getNetworkInfo(6);
+        
+        log(false, String.format("mobileINfor.isConnected?: %s", mobileInfo.isConnected() == true ? "yes_it_is" : "no_its_not"));
+        if (wimaxInfo != null){
+            log(false, String.format("|| ( wimaxInfo: %s != null, && wimaxInfo.isConnected(): %s)", wimaxInfo == null ? "null" : "not_null",  wimaxInfo.isConnected() == true ? "yes_it_is" : "no_its_not"));
+        }else{
+            log(false, "|| 0 wimaxInfo is null");
+        }
         return (mobileInfo.isConnected() || ((wimaxInfo != null) && wimaxInfo.isConnected()));
     }
 
     private boolean startProcess() {
         // start the process
         try {
+            log(true, "hq==============\nBarnacleService: startProcess()");
+            log(false, "hq     pb = new ProcessBuilder");
             ProcessBuilder pb = new ProcessBuilder();
+            log(false, "hq     ./File_SCRIPT");
             pb.command("./" + BarnacleApp.FILE_SCRIPT).directory(getFilesDir());
+            log(false, "hq     pb.start()");
             // TODO: consider putting brncl.ini in pb.environment() instead of using ./setup
             process = pb.start(); //Runtime.getRuntime().exec(cmd);
+            log(false, "hq     new Thread 0 OUTPUT");
             threads[0] = new Thread(new OutputMonitor(MSG_OUTPUT, process.getInputStream()));
+            log(false, "hq     new Thread 1 ERROR");
             threads[1] = new Thread(new OutputMonitor(MSG_ERROR, process.getErrorStream()));
+            log(false, "hq     threads 0 start");
             threads[0].start();
+            log(false, "hq     threads 1 start");
             threads[1].start();
         } catch (Exception e) {
+            log(true, "hq     in startProcess exception");
             log(true, String.format(getString(R.string.execerr), BarnacleApp.FILE_SCRIPT));
             Log.e(TAG, "start failed " + e.toString());
             return false;

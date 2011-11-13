@@ -18,7 +18,7 @@
 -->
 <resources>
 
-    <string name="app_name">HaoQi Barnacle Wifi Tether</string>
+    <string name="app_name">aaHaoQi Barnacle Wifi Tether</string>
     <string name="clientview">Barnacle Clients</string>
     <string name="notify_running">Sharing your connection</string>
     <string name="notify_client">Client connected</string>
