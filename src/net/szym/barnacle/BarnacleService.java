@@ -3,7 +3,7 @@ Step 1. The wifiState can get to == WifiManager.WIFI_STATE_DISBALED
 
 Step 2. Don't need checkUplink() because we don't need 3G from ConnectivityManager.TYPE_MOBILE or ConnetivityManager.TYPE_WIMAX.
 
-Step 3. ?? Don't need app.findIfWan()
+Step 3. Don't need app.findIfWan()
 
 Step 4. didn't look at prepareIni
 */
@@ -311,7 +311,7 @@ public class BarnacleService extends android.app.Service {
                 //if ((state == STATE_STARTING) && (process == null) && checkUplink()) {
                 // don't need checkUplink()
                 if ((state == STATE_STARTING) && (process == null)) {
-                    log(false, "hq. in state == STATE STARTING and no proccess and checkuplink :D:D:D");
+                    log(true, "hq. :D:D:D:D in state == STATE STARTING and no proccess and checkuplink :D:D:D");
                     log(false, getString(R.string.dataready));
                     // I guess we don't need WAN
                     /*
@@ -335,7 +335,7 @@ public class BarnacleService extends android.app.Service {
                     }
                 } // if not checkUpLink then we simply wait...
                 else {
-                    log(true, "either state != STATE_STARTING or process != null");
+                    log(true, "now waiting, becaus  either state != STATE_STARTING or process != null");
                 }
             } else {
                 log(false, "hq. Wifi state Enabled! :( the else before STATE_STARTING");
