@@ -1,13 +1,11 @@
 /*
-TODO:TOASK:
-
 Step 1. The wifiState can get to == WifiManager.WIFI_STATE_DISBALED
 
-Step 2. It's failing at checkUplink(), which checks if ConnectivityManager.TYPE_MOBILE or ConnetivityManager.TYPE_WIMAX is connected.
+Step 2. Don't need checkUplink() because we don't need 3G from ConnectivityManager.TYPE_MOBILE or ConnetivityManager.TYPE_WIMAX.
 
-- Which type do we want?
-- How to get that type running?
+Step 3. ?? Don't need app.findIfWan()
 
+Step 4. didn't look at prepareIni
 */
 
 /*
@@ -310,14 +308,19 @@ public class BarnacleService extends android.app.Service {
                 log(false, String.format(
                     "( (state = %d) ?== (STATE_STARTING = %d) ) && ( (process = %s) ?== null ... && checkUplink:", state, STATE_STARTING, process == null ? "proc_is_null" : "proc_is_not_null"));
                 // wifi is good (or lost), we can start now...
-                if ((state == STATE_STARTING) && (process == null) && checkUplink()) {
+                //if ((state == STATE_STARTING) && (process == null) && checkUplink()) {
+                // don't need checkUplink()
+                if ((state == STATE_STARTING) && (process == null)) {
                     log(false, "hq. in state == STATE STARTING and no proccess and checkuplink :D:D:D");
                     log(false, getString(R.string.dataready));
+                    // I guess we don't need WAN
+                    /*
                     if (!app.findIfWan()) {
                         log(true, getString(R.string.wanerr));
                         state = STATE_STOPPED;
                         break;
                     }
+                    */
                     if (!app.prepareIni()) {
                         log(true, getString(R.string.inierr));
                         state = STATE_STOPPED;
@@ -332,7 +335,7 @@ public class BarnacleService extends android.app.Service {
                     }
                 } // if not checkUpLink then we simply wait...
                 else {
-                    log(true, "either state != STATE_STARTING, process != null, or !checkUplink()");
+                    log(true, "either state != STATE_STARTING or process != null");
                 }
             } else {
                 log(false, "hq. Wifi state Enabled! :( the else before STATE_STARTING");
@@ -446,7 +449,7 @@ public class BarnacleService extends android.app.Service {
 
     }
 
-    private boolean checkUplink() {
+    /*private boolean checkUplink() {
         log(false, "hq. in checkUplink()");
         if (app.prefs.getBoolean("wan_nowait", false)) {
             return true;
@@ -464,7 +467,7 @@ public class BarnacleService extends android.app.Service {
         }
         return (mobileInfo.isConnected() || ((wimaxInfo != null) && wimaxInfo.isConnected()));
     }
-
+    */
     private boolean startProcess() {
         // start the process
         try {

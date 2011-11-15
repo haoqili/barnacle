@@ -59,6 +59,11 @@ public class BarnacleApp extends android.app.Application {
     final static int ERROR_OTHER = 2;
     final static int ERROR_SUPPLICANT = 3;
 
+    /* colors copied from Service for "log" */
+    final static int COLOR_ERROR    = 0xffff2222;
+    final static int COLOR_LOG      = 0xff888888;//android.R.color.primary_text_dark;
+    final static int COLOR_TIME     = 0xffffffff;
+
     SharedPreferences prefs;
     private StatusActivity  statusActivity = null;
     private ClientsActivity clientsActivity = null;
@@ -403,25 +408,35 @@ public class BarnacleApp extends android.app.Application {
 
     /** find default route interface */
     protected boolean findIfWan() {
+        log(false, "hq. ---- inside findIfWan(): ----");
         String if_wan = prefs.getString(getString(R.string.if_wan), "");
+        log(false, String.format("hq. String if_wan = %s != 0 returns true", if_wan));
         if (if_wan.length() != 0) return true;
+
+        log(false, "hq. if_wan length == 0");
 
         // must find mobile data interface
         ArrayList<String> routes = Util.readLinesFromFile("/proc/net/route");
         for (int i = 1; i < routes.size(); ++i) {
             String line = routes.get(i);
+            log(false, String.format("hq. i = %d: line = %s.", i, line)); 
             String[] tokens = line.split("\\s+");
             if (tokens[1].equals("00000000")) {
+                log(false, "hq. tokens[1] == 00000000");
                 // this is our default route
                 if_wan = tokens[0];
                 break;
             }
         }
+        log(false, String.format("hq. out of loop. if_wan = %s", if_wan));
         if (if_wan.length() != 0) {
+            log(false, "hq. if_wan.length is not 0");
             updateToast(getString(R.string.wanok) + if_wan, false);
             prefs.edit().putString(getString(R.string.if_wan), if_wan).commit();
+            log(false, "hq. going to return true for findIfWan");
             return true;
         }
+        log(false, "hq. findIfWan returns prefs.getBoolean");
         // it might be okay in local mode
         return prefs.getBoolean("wan_nowait", false);
     }
@@ -471,5 +486,15 @@ public class BarnacleApp extends android.app.Application {
         if ((service != null) && (service.getState() == BarnacleService.STATE_STOPPED))
             processStopped(); // clean up notifications
     }
+
+    /* copied from Service */
+    protected void log(boolean error, String msg) {
+        android.text.format.Time time = new android.text.format.Time();
+        time.setToNow();
+        Log.i(TAG, "log: " + msg);
+        log.append(COLOR_TIME, time.format("%H:%M:%S\t"))
+          .append(error ? COLOR_ERROR : COLOR_LOG, msg)
+          .append("\n");
+    } 
 }
 

@@ -3,6 +3,9 @@ HaoQi's Barnacle Fork
 Goal: modify Barnacle to put the phone wifi into adhoc mode without
 the NAT or DHCP binaries running, and simplify the interface.
 
+Step 1. The wifiState can get to == WifiManager.WIFI_STATE_DISBALED
+
+Step 2. Changed. Delete checkUplink(), don't need ConnectivityManager.TYPE_MOBILE or TYPE_WIMAX for 3G connections
 
 Barnacle Wifi Tether
 ====================
