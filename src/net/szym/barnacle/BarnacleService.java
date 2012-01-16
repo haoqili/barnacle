@@ -278,7 +278,7 @@ public class BarnacleService extends android.app.Service {
                     clients.clear();
                     stats.init(Util.fetchTrafficData(if_lan));
                     app.processStarted();
-                    mHandler.sendEmptyMessage(MSG_ASSOC);
+                    //mHandler.sendEmptyMessage(MSG_ASSOC); // haoqi turned this off
                 }
             } else {
                 log(false, line);
