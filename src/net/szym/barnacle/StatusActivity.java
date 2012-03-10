@@ -50,8 +50,6 @@ public class StatusActivity extends android.app.TabActivity {
     private TabHost tabs;
     private ToggleButton onoff;
     private Button announce;
-    private Button changeip;
-    private EditText changeipEditText;
     private TextView logview;
     private boolean paused;
 
@@ -101,36 +99,6 @@ public class StatusActivity extends android.app.TabActivity {
             public void onClick(View v) {
                 if (app.service != null) app.service.assocRequest();
                 else v.setEnabled(false);
-            }
-        });
-        changeip = (Button) findViewById(R.id.changeip);
-        changeip.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.i("Status Activity", "hq. CLICKED ON CHANGEIPPPPPPPPPPPPPPPPPPPPP");
-                // HaoQi download from: http://www.droidnova.com/get-the-ip-address-of-your-device,304.html
-                try {
-                    for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements();) {
-                        NetworkInterface intf = en.nextElement();
-                        Log.i("******** toString", intf.toString());
-                        Log.i("******** getDisplayName", intf.getDisplayName());
-                        Log.i("******** getName", intf.getName());
-                        for (Enumeration<InetAddress> enumIpAddr = intf.getInetAddresses();
-                        		enumIpAddr.hasMoreElements();) {
-                            InetAddress inetAddress = enumIpAddr.nextElement();
-                            if (!inetAddress.isLoopbackAddress()) {
-                                Log.i("########",  inetAddress.toString());
-                            }
-                        }
-                    }
-                } catch (Exception e) {
-                    Log.e("******* :(", "can't determine local IP address: " + e.toString());
-                    return;
-                }
-                
-                Log.i("Status Activity", "hq. after p---------------");
-            
-                //startActivity(changingipActivity);
             }
         });
 
